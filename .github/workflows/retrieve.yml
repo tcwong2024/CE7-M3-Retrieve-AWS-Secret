@@ -1,0 +1,60 @@
+name: Retrieve AWS Secret and Variable
+
+on:
+  push:
+    branches:
+      - main
+      - master
+      - feature/*
+      - develop
+  workflow_dispatch:
+
+jobs:
+  retrieve_secret:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ vars.REGION_NAME }}
+
+      # Firstly, insert your secrets in AWS Secret Manager
+      # Then, you can retrieve the secrets based on your secret-id
+      # If you have multiple secret key and value pairs like mine, you can parse
+      # the entire json object and print the values you'd like to display/use
+
+      - name: Get Secret Object
+        run: |
+          secret_object=$(aws secretsmanager get-secret-value --secret-id wtc_simple_secret --query SecretString --output json)
+
+          # Parse specific keys from the secret object
+          secret_value_house_location=$(echo "$secret_object" | jq -r '. | fromjson | .house_location')
+          secret_value_house_type=$(echo "$secret_object" | jq -r '. | fromjson | .house_type')
+          secret_value_house_level=$(echo "$secret_object" | jq -r '. | fromjson | .house_level')
+
+          echo "Secret value house location is: $secret_value_house_location"
+          echo "Secret value house type is: $secret_value_house_type"
+          echo "Secret value house level is: $secret_value_house_level"
+
+  retrieve_parameters:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ vars.REGION_NAME }}
+
+      # Firstly, insert your parameter in AWS Systems Manager > Parameter Store
+      # Then, you can retrieve the parameters using aws ssm get-parameter command
+
+      - name: Get parameter object
+        run: |
+          phone_value=$(aws ssm get-parameter --name luqman_phone --query Parameter.Value --output text)
+          echo "Luqman's phone model is: $phone_value" 
+
+          hobby_value=$(aws ssm get-parameter --name luqman_hobby --query Parameter.Value --output text)
+          echo "Luqman's hobby is: $hobby_value" 
