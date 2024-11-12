@@ -1,4 +1,4 @@
-## Learn how to retreive AWS secrets and parameters store value
+## Learn how to retrieve AWS secrets and parameters store value
 
 1.  Create a Github repository and clone locally.
 2.  Add repository secrets and variables for Github action to login AWS.
