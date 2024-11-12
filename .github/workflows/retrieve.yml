@@ -54,7 +54,4 @@ jobs:
       - name: Get parameter object
         run: |
           location_value=$(aws ssm get-parameter --name /wtc/house_location --query Parameter.Value --output text)
-          echo "wtc house location  is: $location_value" 
-
-        #   hobby_value=$(aws ssm get-parameter --name luqman_hobby --query Parameter.Value --output text)
-        #   echo "Luqman's hobby is: $hobby_value" 
+          echo "wtc house location  is: $location_value"
